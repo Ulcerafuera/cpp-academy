@@ -1,0 +1,84 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "ejercicios",
+      "displayName": "Ejercicios (tu codigo)",
+      "description": "Compila lessons/*/exercises. Los tests fallan hasta que rellenes los TODO.",
+      "binaryDir": "${sourceDir}/build/ejercicios",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ACADEMY_SOLUTIONS": "OFF",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "soluciones",
+      "displayName": "Soluciones de referencia",
+      "description": "Compila lessons/*/solutions. Todos los tests deben pasar.",
+      "binaryDir": "${sourceDir}/build/soluciones",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ACADEMY_SOLUTIONS": "ON",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "sanitizers",
+      "displayName": "Ejercicios + AddressSanitizer / UBSan",
+      "description": "Detecta fugas, accesos fuera de rango y comportamiento indefinido.",
+      "binaryDir": "${sourceDir}/build/sanitizers",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ACADEMY_SOLUTIONS": "OFF",
+        "ACADEMY_SANITIZERS": "ON"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Soluciones optimizadas",
+      "binaryDir": "${sourceDir}/build/release",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "ACADEMY_SOLUTIONS": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    { "name": "ejercicios", "configurePreset": "ejercicios" },
+    { "name": "soluciones", "configurePreset": "soluciones" },
+    { "name": "sanitizers", "configurePreset": "sanitizers" },
+    { "name": "release", "configurePreset": "release" }
+  ],
+  "testPresets": [
+    {
+      "name": "ejercicios",
+      "configurePreset": "ejercicios",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "soluciones",
+      "configurePreset": "soluciones",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "sanitizers",
+      "configurePreset": "sanitizers",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
+      "output": { "outputOnFailure": true }
+    }
+  ]
+}

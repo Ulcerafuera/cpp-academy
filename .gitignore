@@ -1,0 +1,44 @@
+# Directorios de compilacion
+build/
+out/
+cmake-build-*/
+_deps/
+
+# Ficheros generados por CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeUserPresets.json
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+Testing/
+DartConfiguration.tcl
+
+# Artefactos de compilacion
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.gcda
+*.gcno
+*.gcov
+*.profraw
+*.profdata
+
+# Editores e IDE
+.vscode/
+.vs/
+.idea/
+.cache/
+*.swp
+*~
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

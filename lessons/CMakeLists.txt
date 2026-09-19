@@ -1,0 +1,6 @@
+add_subdirectory(01-fundamentos)
+add_subdirectory(02-memoria)
+add_subdirectory(03-raii)
+add_subdirectory(04-stl)
+add_subdirectory(05-plantillas)
+add_subdirectory(06-concurrencia)

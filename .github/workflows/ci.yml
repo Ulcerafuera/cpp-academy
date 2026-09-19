@@ -1,0 +1,137 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CTEST_OUTPUT_ON_FAILURE: "1"
+
+jobs:
+  # Las soluciones de referencia tienen que pasar todos los tests.
+  soluciones:
+    name: Soluciones (${{ matrix.compilador }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - compilador: gcc
+            cc: gcc-13
+            cxx: g++-13
+          - compilador: clang
+            cc: clang-18
+            cxx: clang++-18
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Ninja
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+
+      - name: Cachear las dependencias de FetchContent
+        uses: actions/cache@v4
+        with:
+          path: build/soluciones/_deps
+          key: deps-${{ matrix.compilador }}-${{ hashFiles('cmake/AcademyCatch2.cmake') }}
+
+      - name: Configurar
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+        run: cmake --preset soluciones -DACADEMY_WARNINGS_AS_ERRORS=ON
+
+      - name: Compilar
+        run: cmake --build --preset soluciones
+
+      - name: Tests
+        run: ctest --preset soluciones
+
+  # Los ejercicios tienen los TODO sin rellenar, asi que sus tests fallan a
+  # proposito. Lo que se comprueba aqui es que el esqueleto COMPILA: si no, un
+  # alumno que clone el repositorio no podria ni empezar.
+  ejercicios:
+    name: Los ejercicios compilan
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Ninja
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+
+      - name: Cachear las dependencias de FetchContent
+        uses: actions/cache@v4
+        with:
+          path: build/ejercicios/_deps
+          key: deps-ejercicios-${{ hashFiles('cmake/AcademyCatch2.cmake') }}
+
+      - name: Configurar
+        run: cmake --preset ejercicios -DACADEMY_WARNINGS_AS_ERRORS=ON
+
+      - name: Compilar
+        run: cmake --build --preset ejercicios
+
+  # AddressSanitizer + UndefinedBehaviorSanitizer sobre las soluciones: caza
+  # fugas, accesos fuera de rango y comportamiento indefinido.
+  sanitizers:
+    name: AddressSanitizer + UBSan
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Ninja
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+
+      - name: Configurar
+        run: |
+          cmake -S . -B build/asan -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DACADEMY_SOLUTIONS=ON \
+            -DACADEMY_SANITIZERS=ON
+
+      - name: Compilar
+        run: cmake --build build/asan
+
+      - name: Tests
+        run: ctest --test-dir build/asan
+
+  # ThreadSanitizer sobre la leccion de concurrencia. Va aparte porque no se
+  # puede combinar con AddressSanitizer.
+  thread-sanitizer:
+    name: ThreadSanitizer (concurrencia)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Ninja
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+
+      - name: Configurar
+        run: |
+          cmake -S . -B build/tsan -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DACADEMY_SOLUTIONS=ON \
+            -DCMAKE_CXX_FLAGS="-fsanitize=thread -g" \
+            -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=thread"
+
+      - name: Compilar
+        run: cmake --build build/tsan
+
+      - name: Tests
+        run: ctest --test-dir build/tsan -R concurrencia
+
+  formato:
+    name: Formato (clang-format)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Comprobar el formato
+        run: |
+          find lessons -name '*.cpp' -o -name '*.hpp' \
+            | xargs clang-format --dry-run --Werror
