@@ -29,7 +29,7 @@ cd cpp-academy
 
 cmake --preset ejercicios        # configura
 cmake --build --preset ejercicios
-ctest --preset ejercicios        # 32 tests en rojo: ese es el punto de partida
+ctest --preset ejercicios        # 63 tests en rojo: ese es el punto de partida
 ```
 
 Abre `lessons/01-fundamentos/README.md`, rellena los `TODO` de
@@ -58,10 +58,22 @@ cmake --preset soluciones && ctest --preset soluciones -R "fundamentos"
 | [04](lessons/04-stl/) | Contenedores y algoritmos | contador de palabras y ranking | `std::map`, `std::string_view`, `partial_sort` |
 | [05](lessons/05-plantillas/) | Plantillas y conceptos | funciones genéricas restringidas | *concepts*, plantillas variádicas, fold |
 | [06](lessons/06-concurrencia/) | Concurrencia | cola bloqueante y suma paralela | `std::thread`, mutex, variables de condición |
+| [07](lessons/07-punteros-inteligentes/) | Punteros inteligentes | un inventario y un árbol con padres | `unique_ptr`, `shared_ptr`, `weak_ptr`, ciclos |
+| [08](lessons/08-polimorfismo/) | Herencia y polimorfismo | jerarquía de figuras planas | interfaces, `override`, destructor virtual, clonación |
+| [09](lessons/09-errores/) | Errores y tipos suma | analizador de expresiones | `optional`, `variant`, `visit`, excepciones |
+| [10](lessons/10-rangos/) | Rangos y vistas | tuberías de transformación | `views::filter/transform/take/split`, pereza |
+| [11](lessons/11-iteradores/) | Iteradores propios | una `Lista<T>` que la STL acepta | `forward_iterator`, alias de iterador, `ranges` |
 
-Las lecciones se apoyan unas en otras: la 02 gestiona la memoria a mano para que
-la 03 enseñe por qué RAII resuelve el problema, y la 03 justifica por qué en la
-04 se usa `std::vector` sin pensarlo.
+Las lecciones se apoyan unas en otras y forman un arco:
+
+- **01 → 02 → 03**: de los tipos básicos a la memoria manual, y de ahí a RAII
+  como la respuesta al problema que la 02 deja planteado.
+- **03 → 07**: escrita la gestión de recursos a mano, la 07 usa la de la
+  biblioteca y responde a *¿quién es el dueño?*.
+- **07 → 08**: manejar objetos polimórficos necesita punteros con dueño.
+- **04 → 10**: los algoritmos clásicos y luego las vistas componibles.
+- **03 + 05 + 07 + 10 → 11**: el capstone junta movimiento, plantillas,
+  propiedad y rangos en un contenedor propio.
 
 ## Presets disponibles
 
