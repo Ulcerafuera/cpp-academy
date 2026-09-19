@@ -29,13 +29,13 @@ jobs:
             cc: clang-18
             cxx: clang++-18
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Instalar Ninja
         run: sudo apt-get update && sudo apt-get install -y ninja-build
 
       - name: Cachear las dependencias de FetchContent
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: build/soluciones/_deps
           key: deps-${{ matrix.compilador }}-${{ hashFiles('cmake/AcademyCatch2.cmake') }}
@@ -59,13 +59,13 @@ jobs:
     name: Los ejercicios compilan
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Instalar Ninja
         run: sudo apt-get update && sudo apt-get install -y ninja-build
 
       - name: Cachear las dependencias de FetchContent
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: build/ejercicios/_deps
           key: deps-ejercicios-${{ hashFiles('cmake/AcademyCatch2.cmake') }}
@@ -82,7 +82,7 @@ jobs:
     name: AddressSanitizer + UBSan
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Instalar Ninja
         run: sudo apt-get update && sudo apt-get install -y ninja-build
@@ -106,7 +106,7 @@ jobs:
     name: ThreadSanitizer (concurrencia)
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Instalar Ninja
         run: sudo apt-get update && sudo apt-get install -y ninja-build
@@ -129,7 +129,7 @@ jobs:
     name: Formato (clang-format)
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Comprobar el formato
         run: |
